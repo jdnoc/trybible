@@ -16,154 +16,25 @@
 }
 </style>
 
-<script>
-    const translations = [
-        "MSG",
-        "ESV",
-        "NIV",
-        "NLT"
-    ]
-
-    $(document).ready(function () {
-        // console.log("{{ '/Bibles/' | absolute_url }}" + translation + "/" + book +"/" + chapter + ".json");
-        $.getJSON("{{ '/Bibles/' | absolute_url }}" + translation + "/" + book +"/" + chapter + ".json", function(chapter_data) {
-            // Set the title
-            $('#title').text(book + ' ' + chapter);
-
-            // make and set the verses
-            var verse_numbers = Object.keys(chapter_data);
-            for(i = 1; i <= verse_numbers.length; i++){
-                verse_html = '<div class="verse row justify-content-center"><div class="col-md-2 text-center"><div class="btn-group vs_tr_btn"><button class="verse_button_prev btn btn-sm btn-primary shadow" id="' + i + '"> < </button><button value="' + translations.indexOf(translation) + '" class="verse_button_select btn btn-sm btn-primary shadow" id="' + i + '">' + translation + '</button><button class="verse_button_next btn btn-sm btn-primary shadow" id="' + i + '"> > </button></div></div><div class="my-1 col-md-8"><p class="w-100 lead d-inline"><sup> ' + i + ' </sup></p><p class="lead verse_text d-inline"> ' + chapter_data[i] + '</p></div><div class="col-md-2 text-center"><button id="' + i + '" class="vs_tr_btn add_note mx-2 btn btn-sm btn-primary" value="0"> 📝 </button></div></div>';
-                $('#chapter').append(verse_html);
-            }
-
-            $('body').on('touchstart', function() {});
-
-            $('.verse_button_prev').click(function () {
-                let this_button = this;
-                var this_verse = $(this_button).attr('id');
-                var current = $(this_button).siblings('.verse_button_select').val();
-                current--;
-                if (current < 0) {
-                    current = translations.length - 1;
-                }
-                $(this_button).siblings('.verse_button_select').attr('value', current);
-                $(this_button).siblings('.verse_button_select').text(translations[current]);
-                $.getJSON("{{ '/Bibles/' | absolute_url }}" + translations[current] + "/" + book +"/" + chapter + ".json", function(chapter_data) {
-                    var new_verse_text = chapter_data[this_verse];
-                    $(this_button).parents('.verse').find('.verse_text').text(new_verse_text);
-                });
-            });
-
-            $('.verse_button_next').click(function () {
-                let this_button = this;
-                var this_verse = $(this_button).attr('id');
-                var current = $(this_button).siblings('.verse_button_select').val();
-                current++;
-                if (current >= translations.length) {
-                    current = 0;
-                }
-                $(this_button).siblings('.verse_button_select').attr('value', current);
-                $(this_button).siblings('.verse_button_select').text(translations[current]);
-                $.getJSON("{{ '/Bibles/' | absolute_url }}" + translations[current] + "/" + book +"/" + chapter + ".json", function(chapter_data) {
-                    var new_verse_text = chapter_data[this_verse];
-                    $(this_button).parents('.verse').find('.verse_text').text(new_verse_text);
-                });
-            });
-
-            $('.add_note').click(function () {
-                if($(this).attr('value') === '0') {
-                    $(this).parents('.verse').append("<div class='note my-2 w-100 justify-content-center col-md-8'><div class='summernote'></div></div></div>");
-                    $(this).parents('.verse').find('.summernote').summernote({
-                        airMode: true,
-                        popover: {
-                            air: [
-                            ]
-                        }
-                    });
-                    $(this).parents('.verse').find('.note-editable').children().addClass("lead rounded bg-light py-3 px-3 my-0");
-                    $(this).parents('.verse').find('.summernote').summernote('focus');
-                    $(this).text(' ❌ ');
-                    $(this).attr('value', '1');
-                } else {
-                    $(this).parents('.verse').find('.note').remove();
-                    $(this).text(' 📝 ');
-                    $(this).attr('value', '0');
-                }
-            });
-        });
-        // 
-
-        if(translation === translations[0]) {
-            $('#translation_label').html('The Message (MSG)');
-        } if(translation === translations[1]) {
-            $('#translation_label').html('English Standard Version (ESV)');
-        } if(translation === translations[2]) {
-            $('#translation_label').html('New International Version (NIV)');
-        } if(translation === translations[3]) {
-            $('#translation_label').html('New Living Translation (NLT)');
-        }
-
-        var res = window.location.href.replace(translation, "MSG");
-        var transtlation_link = '<a class="dropdown-item" href="' + res + '">The Message (MSG)</a>';
-        console.log(transtlation_link)
-        $('#translation').append(transtlation_link);
-
-        res = window.location.href.replace(translation, "ESV");
-        transtlation_link = '<a class="dropdown-item" href="' + res + '">English Standard Version (ESV)</a>';
-        $('#translation').append(transtlation_link);
-        console.log(transtlation_link)
-
-        res = window.location.href.replace(translation, "NIV");
-        transtlation_link = '<a class="dropdown-item" href="' + res + '">New International Version (NIV)</a>';
-        $('#translation').append(transtlation_link);
-        console.log(transtlation_link)
-
-        res = window.location.href.replace(translation, "NLT");
-        transtlation_link = '<a class="dropdown-item" href="' + res + '">New Living Translation (NLT)</a>';
-        $('#translation').append(transtlation_link);
-        console.log(transtlation_link)
-    });
-
-    var getUrlParameter = function getUrlParameter(sParam) {
-        var sPageURL = window.location.search.substring(1),
-            sURLVariables = sPageURL.split('&'),
-            sParameterName,
-            i;
-
-        for (i = 0; i < sURLVariables.length; i++) {
-            sParameterName = sURLVariables[i].split('=');
-
-            if (sParameterName[0] === sParam) {
-                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
-            }
-        }
-    };
-
-    var translation = getUrlParameter("tr")
-    var book = getUrlParameter('bk');
-    var chapter = getUrlParameter('ch');
-
-</script>
-    
 <div class="container">
-    <!-- <div class="row my-3">
-        <div class="col-md text-center">
-            <div class="dropdown">
-                <button id="translation_label" class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Translations
-                </button>
-                <div id="translation" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    
-                </div>
-            </div>
-        </div>
-    </div> -->
     <div class="row my-5 text-center">
         <div class="col-md">
             <h1 id="title"></h1>
         </div>
     </div>
-    <div id="chapter" class="my-5">
+</div>
+{% include picker.html %}
+<div class="container">
+    <div class="row my-3">
+            <div id="chapter" class="my-5">
+            </div>
+    </div>
+    <div class="row my-3 text-center">
+        <div class="col-md-6 my-2">
+            <a id="previous" class="d-none" href=""><button class="btn btn-outline-primary"></button></a>
+        </div>
+        <div class="col-md-6 my-2">
+            <a id="next" href="" class="d-none"><button class="btn btn-outline-primary "></button></a>
+        </div>
     </div>
 </div>

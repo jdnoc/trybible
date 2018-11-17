@@ -1,5 +1,74 @@
 var fs = require("fs");
 var copyFile = require('quickly-copy-file');
+
+const books = [
+    "Genesis",
+    "Exodus",
+    "Leviticus",
+    "Numbers",
+    "Deuteronomy",
+    "Joshua",
+    "Judges",
+    "Ruth",
+    "1 Samuel",
+    "2 Samuel",
+    "1 Kings",
+    "2 Kings",
+    "1 Chronicles",
+    "2 Chronicles",
+    "Ezra",
+    "Nehemiah",
+    "Esther",
+    "Job",
+    "Psalms",
+    "Proverbs",
+    "Ecclesiastes",
+    "Song of Solomon",
+    "Isaiah",
+    "Jeremiah",
+    "Lamentations",
+    "Ezekiel",
+    "Daniel",
+    "Hosea",
+    "Joel",
+    "Amos",
+    "Obadiah",
+    "Jonah",
+    "Micah",
+    "Nahum",
+    "Habakkuk",
+    "Zephaniah",
+    "Haggai",
+    "Zechariah",
+    "Malachi",
+    "Matthew",
+    "Mark",
+    "Luke",
+    "John",
+    "Acts",
+    "Romans",
+    "1 Corinthians",
+    "2 Corinthians",
+    "Galatians",
+    "Ephesians",
+    "Philippians",
+    "Colossians",
+    "1 Thessalonians",
+    "2 Thessalonians",
+    "1 Timothy",
+    "2 Timothy",
+    "Titus",
+    "Philemon",
+    "Hebrews",
+    "James",
+    "1 Peter",
+    "2 Peter",
+    "1 John",
+    "2 John",
+    "3 John",
+    "Jude",
+    "Revelation"
+]
     
 const bibles = [
     "raw_json/esv.json",
@@ -86,15 +155,27 @@ function generateChapterPages (bible, title) {
     });
 }
 
+function numberOfChapters(bible) {
+    const books = Object.keys(bible);
+    var count = 0;
+    var chapters = {};
+    
+    books.forEach(function(element) {
+      num_chapters = Object.keys(bible[element]).length;
+      chapters.push(num_chapters);
+        count++;
+    });
+}
+
 var esv = JSON.parse(fs.readFileSync(bibles[0]));
 var nlt = JSON.parse(fs.readFileSync(bibles[1]));
 var niv = JSON.parse(fs.readFileSync(bibles[2]));
 var msg = JSON.parse(fs.readFileSync(bibles[3]));
 
-splitIntoChapters(esv, "ESV");
-splitIntoChapters(nlt, "NLT");
-splitIntoChapters(niv, "NIV");
-splitIntoChapters(msg, "MSG");
+// splitIntoChapters(esv, "ESV");
+// splitIntoChapters(nlt, "NLT");
+// splitIntoChapters(niv, "NIV");
+// splitIntoChapters(msg, "MSG");
 
 // generateChapterPages(esv, "ESV");
 // generateChapterPages(nlt, "NLT");
