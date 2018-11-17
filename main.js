@@ -166,6 +166,7 @@ firebase.auth().onAuthStateChanged(function(user) {
         if (translation && chapter && book) {
             syncDown();
         }
+        pageIsReady();
         // User is signed in.
     } else {
         // No user is signed in.
