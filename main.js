@@ -173,6 +173,7 @@ firebase.auth().onAuthStateChanged(function(user) {
         $('#account').html('Login / Register <i class="fab fa-google"></i>');
         $('#profile').addClass('d-none');
         user_valid = false;
+        pageIsReady();
     }
   });
 
@@ -203,7 +204,6 @@ function signIn() {
         $('#account').html('Login / Register <i class="fab fa-google"></i>'); 
         $('#profile').addClass('d-none');    
         user_valid = false;
-        // ...
     });
 }
 
@@ -298,7 +298,13 @@ function navigate () {
 function pageIsReady() {
     // Set the title
     $('#title').text(book + ' ' + chapter);
-
+        if(!translation) {
+            translation = "NIV";
+        } if(!chapter) {
+            chapter = "1";
+        } if(!book) {
+            book = "Genesis";
+        }
         //Initialize with Genesis
         for (var i = 0; i < books.length; i++) {
             if(i == books.indexOf(book)) {
