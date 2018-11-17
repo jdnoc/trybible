@@ -1,17 +1,17 @@
 var provider = new firebase.auth.GoogleAuthProvider();
 
 const translations = [
-    "MSG",
-    "ESV",
     "NIV",
-    "NLT"
+    "NLT",
+    "MSG",
+    "ESV"
 ];
 
 const translations_title = [
-    "The Message (MSG)",
-    "English Standard Version (ESV)",
     "New International Version (NIV)",
-    "New Living Translation (NLT)"
+    "New Living Translation (NLT)",
+    "The Message (MSG)",
+    "English Standard Version (ESV)"
 ];
 
 const books = [
