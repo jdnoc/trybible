@@ -307,6 +307,7 @@ function pageIsReady() {
             book = "Genesis";
         }
         //Initialize with Genesis
+        $('#book').empty()
         for (var i = 0; i < books.length; i++) {
             if(i == books.indexOf(book)) {
                 var book_link =  "<option selected>" + books[i] +"</option>";
@@ -316,6 +317,7 @@ function pageIsReady() {
             $('#book').append(book_link);
         }
     
+        $('#translation').empty()
         for (var i = 0; i < translations.length; i++) {
             if(i == 0) {
                 var translation_link =  "<option value=" + translations[i] +" selected>" + translations_title[i] +"</option>";
@@ -325,6 +327,7 @@ function pageIsReady() {
             $('#translation').append(translation_link);
         }
     
+        $('#chapter_select').empty();
         for(var i = 1; i <= num_chapters[books.indexOf(book)]; i++) {
             if(i == chapter) {
                 var chapter_link =  "<option selected>" + i +"</option>";
