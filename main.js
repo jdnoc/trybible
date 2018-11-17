@@ -234,8 +234,9 @@ function syncUp() {
             .then(function() {
                 //Document sync successful.
                 // Should probably do a green check or something.
+                console.log("synced.");
             });
-        }, 1000);    
+        }, 1500);    
     }
 }
 
@@ -399,6 +400,7 @@ function pageIsReady() {
                 });
 
                 $('.add_note').click(function () {
+                    syncUp();
                     if($(this).attr('value') === '0') {
                         if( $(this).parent().parent().find('.summernote').length == 0) {
                             $(this).parent().parent().append("<div class='note my-2 w-100 justify-content-center col-md-8'><div class='summernote'></div></div></div>");
