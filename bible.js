@@ -1,10 +1,11 @@
 var fs = require("fs");
-
+var copyFile = require('quickly-copy-file');
+    
 const bibles = [
-    "esv.json",
-    "nlt.json",
-    "niv.json",
-    "msg.json"
+    "raw_json/esv.json",
+    "raw_json/nlt.json",
+    "raw_json/niv.json",
+    "raw_json/msg.json"
 ];
 
 Object.size = function(obj) {
@@ -54,6 +55,37 @@ function splitIntoChapters(bible, title) {
     })
 }
 
+function generateChapterPages (bible, title) {
+    const books = Object.keys(bible);
+    var count = 0;
+    
+    books.forEach(function(element) {
+      num_chapters = Object.keys(bible[element]).length;
+      for(var i = 1; i <= num_chapters; i++) {
+        //   console.log(esv[element][i]);
+
+        var dir = title;
+        if (!fs.existsSync(dir)){
+            fs.mkdirSync(dir);
+        }
+
+        var dir = title + "/" + books[count];
+        if (!fs.existsSync(dir)){
+            fs.mkdirSync(dir);
+        }
+        console.log(dir + '/' + i + '.html');
+
+        copyFile('default.html', dir + '/' + i + '.html', function(error) {
+            if (error) return console.error(error);
+            console.log('File was copied!')
+          });
+
+          console.log("Generating: " + dir + " " + i);
+      } 
+      count++;
+    });
+}
+
 var esv = JSON.parse(fs.readFileSync(bibles[0]));
 var nlt = JSON.parse(fs.readFileSync(bibles[1]));
 var niv = JSON.parse(fs.readFileSync(bibles[2]));
@@ -62,4 +94,9 @@ var msg = JSON.parse(fs.readFileSync(bibles[3]));
 splitIntoChapters(esv, "ESV");
 splitIntoChapters(nlt, "NLT");
 splitIntoChapters(niv, "NIV");
-splitIntoChapters(esv, "MSG");
+splitIntoChapters(msg, "MSG");
+
+// generateChapterPages(esv, "ESV");
+// generateChapterPages(nlt, "NLT");
+// generateChapterPages(niv, "NIV");
+// generateChapterPages(msg, "MSG");

@@ -1,0 +1,48 @@
+---
+layout: default
+---
+
+<script>
+    $(document).ready(function () {
+        $.getJSON("http://127.0.0:4000/Bibles/" + translation + "/" + book +"/" + chapter + ".json", function(chapter) {
+            var verse_numbers = Object.keys(chapter);
+            for(i = 1; i <= verse_numbers.length; i++){
+                verse_html = '<p id="vs_' + i + '"><sup>' + i + '</sup> ' + chapter[i] + '</p>';
+                $('#chapter').append(verse_html);
+            }
+
+        });
+    });
+
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    };
+
+    var translation = getUrlParameter("tr")
+    var book = getUrlParameter('bk');
+    var chapter = getUrlParameter('ch');
+
+    console.log(translation);
+    console.log(book);
+    console.log(chapter);
+
+</script>
+
+<div class="container">
+    <div class="row">
+        <div id="chapter">
+
+        </div>
+    </div>
+</div>
