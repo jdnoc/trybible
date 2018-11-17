@@ -292,7 +292,7 @@ function navigate () {
     var chapter = $('#chapter_select').val();
     var translation = $('#translation').val();
 
-    window.location = "/chapter/?tr=" + translation + "&bk=" + book + "&ch=" + chapter;
+    window.location = "/chapter?tr=" + translation + "&bk=" + book + "&ch=" + chapter;
 }
 
 function pageIsReady() {
