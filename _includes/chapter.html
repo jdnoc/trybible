@@ -25,8 +25,8 @@
     ]
 
     $(document).ready(function () {
-        // console.log(" '/Bibles/' | absolute_url }}" + translation + "/" + book +"/" + chapter + ".json");
-        $.getJSON(" '/Bibles/' | absolute_url }}" + translation + "/" + book +"/" + chapter + ".json", function(chapter_data) {
+        // console.log("{{ '/Bibles/' | absolute_url }}" + translation + "/" + book +"/" + chapter + ".json");
+        $.getJSON("{{ '/Bibles/' | absolute_url }}" + translation + "/" + book +"/" + chapter + ".json", function(chapter_data) {
             // Set the title
             $('#title').text(book + ' ' + chapter);
 
@@ -46,7 +46,7 @@
                 }
                 $(this_button).siblings('.verse_button_select').attr('value', current);
                 $(this_button).siblings('.verse_button_select').text(translations[current]);
-                $.getJSON(" '/Bibles/' | absolute_url }}" + translations[current] + "/" + book +"/" + chapter + ".json", function(chapter_data) {
+                $.getJSON("{{ '/Bibles/' | absolute_url }}" + translations[current] + "/" + book +"/" + chapter + ".json", function(chapter_data) {
                     var new_verse_text = chapter_data[this_verse];
                     $(this_button).parents('.verse').find('.verse_text').text(new_verse_text);
                 });
@@ -62,7 +62,7 @@
                 }
                 $(this_button).siblings('.verse_button_select').attr('value', current);
                 $(this_button).siblings('.verse_button_select').text(translations[current]);
-                $.getJSON(" '/Bibles/' | absolute_url }}" + translations[current] + "/" + book +"/" + chapter + ".json", function(chapter_data) {
+                $.getJSON("{{ '/Bibles/' | absolute_url }}" + translations[current] + "/" + book +"/" + chapter + ".json", function(chapter_data) {
                     var new_verse_text = chapter_data[this_verse];
                     $(this_button).parents('.verse').find('.verse_text').text(new_verse_text);
                 });
