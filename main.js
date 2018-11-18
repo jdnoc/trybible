@@ -302,7 +302,8 @@ function pageIsReady() {
     $('#title').text(book + ' ' + chapter);
         if(!translation) {
             translation = "NIV";
-        } if(!chapter) {
+        } 
+        if(!chapter) {
             chapter = "1";
         } if(!book) {
             book = "Genesis";
@@ -320,7 +321,7 @@ function pageIsReady() {
     
         $('#translation').empty()
         for (var i = 0; i < translations.length; i++) {
-            if(i == 0) {
+            if(i == translations.indexOf(translation)) {
                 var translation_link =  "<option value=" + translations[i] +" selected>" + translations_title[i] +"</option>";
             } else {
                 var translation_link =  "<option value=" + translations[i] +">" + translations_title[i] +"</option>";
