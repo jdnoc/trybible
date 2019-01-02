@@ -166,7 +166,9 @@ firebase.auth().onAuthStateChanged(function(user) {
         if (translation && chapter && book) {
             syncDown();
         }
-        pageIsReady();
+        $(document).ready(function () {
+            pageIsReady();
+        });
         // User is signed in.
     } else {
         // No user is signed in.
@@ -174,7 +176,9 @@ firebase.auth().onAuthStateChanged(function(user) {
         $('#account').html('Login / Register <i class="fab fa-google"></i>');
         $('#profile').addClass('d-none');
         user_valid = false;
-        pageIsReady();
+        $(document).ready(function () {
+            pageIsReady();
+        });
     }
   });
 
@@ -252,11 +256,15 @@ function syncDown() {
                 $('#chapter').html( doc.data().data);
                 data_synced_down = true;
                 sync_up_ok = true;
-                pageIsReady();
+                $(document).ready(function () {
+                    pageIsReady();
+                });
             } else {
                 // doc.data() will be undefined in this case
                 console.log("No such document!");
-                pageIsReady();
+                $(document).ready(function () {
+                    pageIsReady();
+                });
                 sync_up_ok = true;
             }
         }).catch(function(error) {
@@ -265,10 +273,6 @@ function syncDown() {
         });
     }
 }
-
-// $(document).ready(function () {
-//     pageIsReady();
-// });
 
 var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = window.location.search.substring(1),
@@ -432,19 +436,19 @@ function pageIsReady() {
                     syncUp();
                 });
 
-                if (window.location.pathname === "/chapter/") {
+                if (window.location.pathname === "/chapter" || "/chapter/") {
                     if(chapter > 1) {
                         chapter--;
-                        $("#previous").find('button').text("Chapter " + chapter);
-                        $("#previous").attr("href", window.location.protocol + "//" + window.location.host + "/chapter/?tr=" + translation + "&bk=" + book + "&ch=" + chapter);
+                        $("#previous").find('button').text("👈 Chapter " + chapter);
+                        $("#previous").attr("href", window.location.protocol + "//" + window.location.host + "/chapter?tr=" + translation + "&bk=" + book + "&ch=" + chapter);
                         $("#previous").removeClass("d-none");
                         chapter++;
                     } 
                     var chap_in_book = num_chapters[books.indexOf(book)];
                     if (chapter < chap_in_book) {
                         chapter++
-                        $("#next").find('button').text("Chapter " + chapter);
-                        $("#next").attr("href", window.location.protocol + "//" + window.location.host + "/chapter/?tr=" + translation + "&bk=" + book + "&ch=" + chapter);
+                        $("#next").find('button').text("👉 Chapter " + chapter);
+                        $("#next").attr("href", window.location.protocol + "//" + window.location.host + "/chapter?tr=" + translation + "&bk=" + book + "&ch=" + chapter);
                         $("#next").removeClass("d-none");
                         chapter--;
                     }
