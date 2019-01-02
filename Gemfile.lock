@@ -73,7 +73,7 @@ DEPENDENCIES
   jekyll-seo-tag
   jekyll-sitemap
   tzinfo-data
-  wdm (~> 0.1.0)
+  wdm
 
 BUNDLED WITH
    1.17.1
