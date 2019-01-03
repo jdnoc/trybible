@@ -364,7 +364,7 @@ function pageIsReady() {
                 // make and set the verses
                 var verse_numbers = Object.keys(chapter_data);
                 for(i = 1; i <= verse_numbers.length; i++){
-                    verse_html = '<div class="verse row justify-content-center"><div class="col-md-2 col-4 order-1 order-md-1 text-center"><div class="btn-group vs_tr_btn"><button class="verse_button_prev btn btn-sm btn-primary shadow" id="' + i + '"> < </button><button value="' + translations.indexOf(translation) + '" class="verse_button_select btn btn-sm btn-primary shadow" id="' + i + '">' + translation + '</button><button class="verse_button_next btn btn-sm btn-primary shadow" id="' + i + '"> > </button></div></div><div class="col-md-2 col-4 order-2 order-md-3 text-center"><button id="' + i + '" class="vs_tr_btn add_note shadow mx-2 btn btn-sm btn-primary" value="0"> 📝 </button></div><div class="my-1 col-md-8 order-3 order-md-2"><p class="w-100 lead d-inline"><sup> ' + i + ' </sup></p><p class="lead verse_text d-inline"> ' + chapter_data[i] + '</p></div></div>';
+                    verse_html = '<div class="verse row justify-content-center"><div class="col-md-2 col-4 order-1 order-md-1 text-center"><div class="btn-group vs_tr_btn"><button class="verse_button_prev btn btn-sm btn-primary shadow" id="' + i + '"> < </button><button value="' + translations.indexOf(translation) + '" class="verse_button_select btn btn-sm btn-primary shadow" id="' + i + '">' + translation + '</button><button class="verse_button_next btn btn-sm btn-primary shadow" id="' + i + '"> > </button></div></div><div class="col-md-2 col-4 order-2 order-md-3 text-center"><button id="' + i + '" class="vs_tr_btn add_note shadow mx-2 btn btn-sm btn-primary" value="0"> 📝 </button></div><div class="my-1 col-md-8 order-3 order-md-2"><p class="w-100 chapter_text d-inline"><sup> ' + i + ' </sup></p><p class="chapter_text verse_text d-inline"> ' + chapter_data[i] + '</p></div></div>';
                     $('#chapter').append(verse_html);
                 }
 
@@ -411,17 +411,18 @@ function pageIsReady() {
                             $(this).parent().parent().append("<div class='note my-2 w-100 order-4 justify-content-center col-md-8'><div class='summernote'></div></div></div>");
                             $(this).parent().parent().find('.summernote').summernote({
                                 airMode: true,
+                                placeholder: 'Write a note...',
                                 popover: {
                                     air: [
                                     ]
                                 }
                             });
-                            $(this).parent().parent().find('.note-editable').addClass("lead rounded bg-light py-2 px-3 my-0");
+                            $(this).parent().parent().find('.note-editable').addClass("chapter_text rounded bg-light py-2 px-3 my-0");
                             $(this).parent().parent().find('.note-editable').children().addClass("my-0");
-                            $('.summernote').summernote({
-                                placeholder: 'Write a note...'
-                            });
-                            $(this).parent().parent().find('.summernote').summernote('focus');
+                            $(this).parent().parent().find('.note-placeholder').addClass("py-2 px-3 chapter_text_muted my-0");
+                            // $(this).parent().parent().find('.note-placeholder').data('text', 'Write a note...');
+                            // $('.summernote').summernote({placeholder: 'Write a note...'});
+                            // $(this).parent().parent().find('.summernote').summernote('focus');
                             $(this).text(' ❌ ');
                             $(this).attr('value', '1');
                         }
@@ -510,7 +511,7 @@ function pageIsReady() {
                             ]
                         }
                     });
-                    $(this).parent().parent().find('.note-editable').addClass("lead rounded bg-light py-2 px-3 my-0");
+                    $(this).parent().parent().find('.note-editable').addClass("chapter_text rounded bg-light py-2 px-3 my-0");
                     $(this).parent().parent().find('.note-editable').children().addClass("my-0");
                     $(this).parent().parent().find('.summernote').summernote('focus');
                     $(this).text(' ❌ ');
