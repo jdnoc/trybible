@@ -169,6 +169,7 @@ firebase.auth().onAuthStateChanged(function(user) {
         $(document).ready(function () {
             pageIsReady();
         });
+        console.log(user.uid);
         // User is signed in.
     } else {
         // No user is signed in.
@@ -228,50 +229,93 @@ var timeout = null;
 var sync_up_ok = false;
 
 function syncUp() {
-    if(user_valid && sync_up_ok) {
+    console.log("sync");
+    // if(user_valid && sync_up_ok) {
+    //     clearTimeout(timeout);
+    //     timeout = setTimeout(function () {
+    //         var chapterDocumentRef = db.doc('users/' + app_user.uid + '/chapter_sync/' + book + '-' + chapter);
+    //         chapterDocumentRef.set({
+    //             data: $('#chapter').html()
+    //         })
+    //         .then(function() {
+    //             //Document sync successful.
+    //             // Should probably do a green check or something.
+    //             console.log("synced.");
+    //         });
+    //     }, 1500);    
+    // }
+}
+
+// sync up verse
+function sync_up_verse (verse_number) {
+    if(user_valid /*&& sync_up_ok*/) {
         clearTimeout(timeout);
         timeout = setTimeout(function () {
+            var v_obj = {};
+            v_obj[verse_number] = $('#'+ verse_number).find(".verse_button_select").val()
             var chapterDocumentRef = db.doc('users/' + app_user.uid + '/chapter_sync/' + book + '-' + chapter);
-            chapterDocumentRef.set({
-                data: $('#chapter').html()
-            })
+            chapterDocumentRef.update(v_obj)
             .then(function() {
                 //Document sync successful.
                 // Should probably do a green check or something.
-                console.log("synced.");
+                console.log("synced verse.");
+                console.log(v_obj);
             });
         }, 1500);    
-    }
+    } else {
+        console.log("Not logged in");
+    }    
+}
+
+// sync up note
+function sync_up_note (note_number) {
+    if(user_valid /*&& sync_up_ok*/) {
+        clearTimeout(timeout);
+        timeout = setTimeout(function () {
+            var n_obj = {};
+            n_obj[note_number] = $('#'+ note_number)[0].innerHTML;
+            var chapterDocumentRef = db.doc('users/' + app_user.uid + '/chapter_sync/' + book + '-' + chapter);
+            chapterDocumentRef.update(n_obj)
+            .then(function() {
+                //Document sync successful.
+                // Should probably do a green check or something.
+                console.log("synced note.");
+                console.log(n_obj);
+            });
+        }, 1500);    
+    } else {
+        console.log("Not logged in");
+    }    
 }
 
 var data_synced_down = false;
 
 function syncDown() {
-    if(user_valid) {
-        console.log('users/' + app_user.uid + '/chapter_sync/' + book + '-' + chapter);
-        var chapterDocumentRef = db.doc('users/' + app_user.uid + '/chapter_sync/' + book + '-' + chapter);
-        chapterDocumentRef.get().then(function(doc) {
-            if (doc.exists) {
-                console.log("Document data:", doc.data());
-                $('#chapter').html( doc.data().data);
-                data_synced_down = true;
-                sync_up_ok = true;
-                $(document).ready(function () {
-                    pageIsReady();
-                });
-            } else {
-                // doc.data() will be undefined in this case
-                console.log("No such document!");
-                $(document).ready(function () {
-                    pageIsReady();
-                });
-                sync_up_ok = true;
-            }
-        }).catch(function(error) {
-            console.log("Error getting document:", error);
-            pageIsReady()
-        });
-    }
+    // if(user_valid) {
+    //     console.log('users/' + app_user.uid + '/chapter_sync/' + book + '-' + chapter);
+    //     var chapterDocumentRef = db.doc('users/' + app_user.uid + '/chapter_sync/' + book + '-' + chapter);
+    //     chapterDocumentRef.get().then(function(doc) {
+    //         if (doc.exists) {
+    //             console.log("Document data:", doc.data());
+    //             $('#chapter').html( doc.data().data);
+    //             data_synced_down = true;
+    //             sync_up_ok = true;
+    //             $(document).ready(function () {
+    //                 pageIsReady();
+    //             });
+    //         } else {
+    //             // doc.data() will be undefined in this case
+    //             console.log("No such document!");
+    //             $(document).ready(function () {
+    //                 pageIsReady();
+    //             });
+    //             sync_up_ok = true;
+    //         }
+    //     }).catch(function(error) {
+    //         console.log("Error getting document:", error);
+    //         pageIsReady()
+    //     });
+    // }
 }
 
 var getUrlParameter = function getUrlParameter(sParam) {
@@ -364,7 +408,7 @@ function pageIsReady() {
                 // make and set the verses
                 var verse_numbers = Object.keys(chapter_data);
                 for(i = 1; i <= verse_numbers.length; i++){
-                    verse_html = '<div class="verse row justify-content-center"><div class="col-md-2 col-4 order-1 order-md-1 text-center"><div class="btn-group vs_tr_btn"><button class="verse_button_prev btn btn-sm btn-primary shadow" id="' + i + '"> < </button><button value="' + translations.indexOf(translation) + '" class="verse_button_select btn btn-sm btn-primary shadow" id="' + i + '">' + translation + '</button><button class="verse_button_next btn btn-sm btn-primary shadow" id="' + i + '"> > </button></div></div><div class="col-md-2 col-4 order-2 order-md-3 text-center"><button id="' + i + '" class="vs_tr_btn add_note shadow mx-2 btn btn-sm btn-primary" value="0"> 📝 </button></div><div class="my-1 col-md-8 order-3 order-md-2"><p class="w-100 chapter_text d-inline"><sup> ' + i + ' </sup></p><p class="chapter_text verse_text d-inline"> ' + chapter_data[i] + '</p></div></div>';
+                    verse_html = '<div id="v_' + i + '" class="verse row justify-content-center"><div class="col-md-2 col-4 order-1 order-md-1 text-center"><div class="btn-group vs_tr_btn"><button class="verse_button_prev btn btn-sm btn-primary shadow"> < </button><button value="' + translations.indexOf(translation) + '" class="verse_button_select btn btn-sm btn-primary shadow">' + translation + '</button><button class="verse_button_next btn btn-sm btn-primary shadow"> > </button></div></div><div class="col-md-2 col-4 order-2 order-md-3 text-center"><button id="' + i + '" class="vs_tr_btn add_note shadow mx-2 btn btn-sm btn-primary" value="0"> 📝 </button></div><div class="my-1 col-md-8 order-3 order-md-2"><p class="w-100 chapter_text d-inline"><sup> ' + i + ' </sup></p><p class="chapter_text verse_text d-inline"> ' + chapter_data[i] + '</p></div></div>';
                     $('#chapter').append(verse_html);
                 }
 
@@ -372,7 +416,8 @@ function pageIsReady() {
 
                 $('.verse_button_prev').click(function () {
                     let this_button = this;
-                    var this_verse = $(this_button).attr('id');
+                    var this_verse_id = $(this_button).parent().parent().parent().attr('id');
+                    var this_verse = this_verse_id.replace('v_', '');
                     var current = $(this_button).siblings('.verse_button_select').val();
                     current--;
                     if (current < 0) {
@@ -383,13 +428,14 @@ function pageIsReady() {
                     $.getJSON("/Bibles/" + translations[current] + "/" + book +"/" + chapter + ".json", function(chapter_data) {
                         var new_verse_text = chapter_data[this_verse];
                         $(this_button).parents('.verse').find('.verse_text').text(new_verse_text);
-                        syncUp();
+                        sync_up_verse(this_verse_id);
                     });
                 });
 
                 $('.verse_button_next').click(function () {
                     let this_button = this;
-                    var this_verse = $(this_button).attr('id');
+                    var this_verse_id = $(this_button).parent().parent().parent().attr('id');
+                    var this_verse = this_verse_id.replace('v_', '');
                     var current = $(this_button).siblings('.verse_button_select').val();
                     current++;
                     if (current >= translations.length) {
@@ -400,12 +446,12 @@ function pageIsReady() {
                     $.getJSON("/Bibles/" + translations[current] + "/" + book +"/" + chapter + ".json", function(chapter_data) {
                         var new_verse_text = chapter_data[this_verse];
                         $(this_button).parents('.verse').find('.verse_text').text(new_verse_text);
-                        syncUp();
+                        sync_up_verse(this_verse_id);
                     });
                 });
 
                 $('.add_note').click(function () {
-                    syncUp();
+                    // syncUp();
                     if($(this).attr('value') === '0') {
                         if( $(this).parent().parent().find('.summernote').length == 0) {
                             $(this).parent().parent().append("<div class='note my-2 w-100 order-4 justify-content-center col-md-8'><div class='summernote'></div></div></div>");
@@ -418,10 +464,12 @@ function pageIsReady() {
                                 }
                             });
                             $(this).parent().parent().find('.note-editable').addClass("chapter_text rounded bg-light py-2 px-3 my-0");
-                            $(this).parent().parent().find('.note-editable').children().addClass("my-0");
+                            $(this).parent().parent().find('.note-editable').children().addClass("my-0 verse_note");
                             $(this).parent().parent().find('.note-placeholder').addClass("py-2 px-3 chapter_text_muted my-0");
-                            // $(this).parent().parent().find('.note-placeholder').data('text', 'Write a note...');
-                            // $('.summernote').summernote({placeholder: 'Write a note...'});
+                            var verse_id = $(this).parent().parent().prop("id");
+                            var note_id = verse_id.replace('v', 'n');
+                            $(this).parent().parent().find('.note-editable').attr('id', note_id);
+                            // console.log(verse_id);
                             // $(this).parent().parent().find('.summernote').summernote('focus');
                             $(this).text(' ❌ ');
                             $(this).attr('value', '1');
@@ -434,7 +482,7 @@ function pageIsReady() {
                 });
 
                 $("body").on('DOMSubtreeModified', ".note-editable", function() {
-                    syncUp();
+                    sync_up_note($(this).attr("id"));
                 });
 
                 if (window.location.pathname === "/chapter" || "/chapter/") {
@@ -454,11 +502,6 @@ function pageIsReady() {
                         chapter--;
                     }
                 }
-
-                //Watch for inputs so we can syncUp data to the DB
-                $( ".verse_button_prev" ).on( "click", syncUp());
-                $( ".verse_button_next" ).on( "click", syncUp());
-                $( ".summernote" ).on( "input", syncUp());
             });
         } else {
             
@@ -468,7 +511,8 @@ function pageIsReady() {
 
         $('.verse_button_prev').click(function () {
             let this_button = this;
-            var this_verse = $(this_button).attr('id');
+            var this_verse_id = $(this_button).parent().parent().parent().attr('id');
+            var this_verse = this_verse_id.replace('v_', '');
             var current = $(this_button).siblings('.verse_button_select').val();
             current--;
             if (current < 0) {
@@ -479,13 +523,14 @@ function pageIsReady() {
             $.getJSON("/Bibles/" + translations[current] + "/" + book +"/" + chapter + ".json", function(chapter_data) {
                 var new_verse_text = chapter_data[this_verse];
                 $(this_button).parents('.verse').find('.verse_text').text(new_verse_text);
-                syncUp();
+                sync_up_verse(this_verse_id);
             });
         });
 
         $('.verse_button_next').click(function () {
             let this_button = this;
-            var this_verse = $(this_button).attr('id');
+            var this_verse_id = $(this_button).parent().parent().parent().attr('id');
+            var this_verse = this_verse_id.replace('v_', '');
             var current = $(this_button).siblings('.verse_button_select').val();
             current++;
             if (current >= translations.length) {
@@ -496,24 +541,31 @@ function pageIsReady() {
             $.getJSON("/Bibles/" + translations[current] + "/" + book +"/" + chapter + ".json", function(chapter_data) {
                 var new_verse_text = chapter_data[this_verse];
                 $(this_button).parents('.verse').find('.verse_text').text(new_verse_text);
-                syncUp();
+                sync_up_verse(this_verse_id);
             });
         });
 
         $('.add_note').click(function () {
+            // syncUp();
             if($(this).attr('value') === '0') {
                 if( $(this).parent().parent().find('.summernote').length == 0) {
-                    $(this).parent().parent().append("<div class='note my-2 w-100 justify-content-center col-md-8'><div class='summernote'></div></div></div>");
+                    $(this).parent().parent().append("<div class='note my-2 w-100 order-4 justify-content-center col-md-8'><div class='summernote'></div></div></div>");
                     $(this).parent().parent().find('.summernote').summernote({
                         airMode: true,
+                        placeholder: 'Write a note...',
                         popover: {
                             air: [
                             ]
                         }
                     });
                     $(this).parent().parent().find('.note-editable').addClass("chapter_text rounded bg-light py-2 px-3 my-0");
-                    $(this).parent().parent().find('.note-editable').children().addClass("my-0");
-                    $(this).parent().parent().find('.summernote').summernote('focus');
+                    $(this).parent().parent().find('.note-editable').children().addClass("my-0 verse_note");
+                    $(this).parent().parent().find('.note-placeholder').addClass("py-2 px-3 chapter_text_muted my-0");
+                    var verse_id = $(this).parent().parent().prop("id");
+                    var note_id = verse_id.replace('v', 'n');
+                    $(this).parent().parent().find('.note-editable').attr('id', note_id);
+                    // console.log(verse_id);
+                    // $(this).parent().parent().find('.summernote').summernote('focus');
                     $(this).text(' ❌ ');
                     $(this).attr('value', '1');
                 }
@@ -525,30 +577,25 @@ function pageIsReady() {
         });
 
         $("body").on('DOMSubtreeModified', ".note-editable", function() {
-            syncUp();
+            sync_up_note($(this).attr("id"));
         });
 
-        if (window.location.pathname === "/chapter/") {
+        if (window.location.pathname === "/chapter" || "/chapter/") {
             if(chapter > 1) {
                 chapter--;
-                $("#previous").find('button').text("Chapter " + chapter);
-                $("#previous").attr("href", window.location.protocol + "//" + window.location.host + "/chapter/?tr=" + translation + "&bk=" + book + "&ch=" + chapter);
+                $("#previous").find('button').text("👈 Chapter " + chapter);
+                $("#previous").attr("href", window.location.protocol + "//" + window.location.host + "/chapter?tr=" + translation + "&bk=" + book + "&ch=" + chapter);
                 $("#previous").removeClass("d-none");
                 chapter++;
             } 
             var chap_in_book = num_chapters[books.indexOf(book)];
             if (chapter < chap_in_book) {
                 chapter++
-                $("#next").find('button').text("Chapter " + chapter);
-                $("#next").attr("href", window.location.protocol + "//" + window.location.host + "/chapter/?tr=" + translation + "&bk=" + book + "&ch=" + chapter);
+                $("#next").find('button').text("Chapter " + chapter + " 👉");
+                $("#next").attr("href", window.location.protocol + "//" + window.location.host + "/chapter?tr=" + translation + "&bk=" + book + "&ch=" + chapter);
                 $("#next").removeClass("d-none");
                 chapter--;
             }
         }
-
-        //Watch for inputs so we can syncUp data to the DB
-        $( ".verse_button_prev" ).on( "click", syncUp());
-        $( ".verse_button_next" ).on( "click", syncUp());
-        $( ".summernote" ).on( "input", syncUp());
     }
 }
