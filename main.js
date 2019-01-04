@@ -157,25 +157,24 @@ var app_user = null;
 
 firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
+        // User is signed in.
         console.log("user is logged in");
         user_valid = true;
         app_user = user;
         $(document).ready(function () {
-            $('#account').attr("onclick", 'signOut()');
-            $('#account').text('Logout');
-            $('#profile').html(user.displayName.substring(0, user.displayName.indexOf(" ")) + '<i class="ml-2 fas fa-bible"></i>');
-            $('#profile').removeClass('d-none');    
+            $('#sign-up').addClass("d-none");
+            $('.account').attr("onclick", 'signOut()');
+            $('.account').text('Logout');
             pageIsReady();
         });
         console.log(user.uid);
-        // User is signed in.
     } else {
         // No user is signed in.
-        $('#account').attr("onclick", 'signIn()');
-        $('#account').html('Login / Register <i class="fab fa-google"></i>');
-        $('#profile').addClass('d-none');
         user_valid = false;
         $(document).ready(function () {
+            $('#sign-up').removeClass("d-none");
+            $('#account').attr("onclick", 'signIn()');
+            $('#account').html('Login / Register <i class="fab fa-google"></i>');    
             pageIsReady();
         });
     }
@@ -197,9 +196,9 @@ function signIn() {
         // The firebase.auth.AuthCredential type that was used.
         var credential = error.credential;
 
-        $('#account').attr("onclick", 'signIn()');
-        $('#account').html('Login / Register <i class="fab fa-google"></i>');
-        $('#profile').addClass('d-none');
+        $('.account').attr("onclick", 'signIn()');
+        $('.account').html('Login / Register <i class="fab fa-google"></i>');
+        // $('#profile').addClass('d-none');
         user_valid = false;
     });
 }
@@ -207,9 +206,9 @@ function signIn() {
 function signOut() {
     firebase.auth().signOut().then(function () {
         // Sign-out successful.
-        $('#account').attr("onclick", 'signIn()');
-        $('#account').html('Login / Register <i class="fab fa-google"></i>');
-        $('#profile').addClass('d-none');
+        $('.account').attr("onclick", 'signIn()');
+        $('.account').html('Login / Register <i class="fab fa-google"></i>');
+        // $('.profile').addClass('d-none');
         // refresh the page
         user_valid = false;
         location.reload(); 
