@@ -168,7 +168,6 @@ firebase.auth().onAuthStateChanged(function (user) {
             syncUnsyncedNotes();
             pageIsReady();
         });
-        console.log(user.uid);
     } else {
         // No user is signed in.
         user_valid = false;
@@ -219,33 +218,38 @@ function signOut() {
 }
 
 var timeout = null;
+var sync_timeout = null;
 
 // sync up verse
 function sync_up_verse(verse_number) {
     if (user_valid) {
         clearTimeout(timeout);
         timeout = setTimeout(function () {
+            syncing();
             var v_obj = {};
             v_obj[verse_number] = $('#' + verse_number).find(".verse_button_select").val()
             var chapterDocumentRef = db.doc('users/' + app_user.uid + '/chapter_sync/' + book + ' ' + chapter);
             chapterDocumentRef.update(v_obj)
                 .then(function () {
-                    console.log("Synced verse." + v_obj);
+                    console.log("Verse synced.");
+                    done_syncing();
                 })
                 .catch(function (error) {
                     // The document probably doesn't exist.
                     // We need to create the document in Cloud Firestore
                     chapterDocumentRef.set(v_obj)
                         .then(function () {
-                            console.log("Created verse: " + v_obj);
+                            console.log("Verse synced.");
+                            done_syncing();
                         })
                         .catch(function (error) {
                             console.error("Error updating document: ", error);
+                            done_syncing();
                         })
                 });
         }, 1000);
     } else {
-        console.log("Not logged in");
+        // console.log("Not logged in");
     }
 }
 
@@ -257,32 +261,36 @@ function sync_up_note(note_number) {
             note_sync(note_number);
         }, 1000);
     } else {
-        console.log("Not logged in");
+        // console.log("Not logged in");
     }
 }
 function note_sync (note_number) {
+    syncing();
     var n_obj = {};
     if ($('#' + note_number)[0] === undefined) {
-        console.log("Note has been deleted");
+        // console.log("Note has been deleted");
         n_obj[note_number] = firebase.firestore.FieldValue.delete();
     } else {
-        console.log("Note is present");
+        // console.log("Note is present");
         n_obj[note_number] = $('#' + note_number)[0].innerHTML;
     }
     var chapterDocumentRef = db.doc('users/' + app_user.uid + '/chapter_sync/' + book + ' ' + chapter);
     chapterDocumentRef.update(n_obj)
     .then(function () {
-        console.log("Updated note: " + n_obj);
+        console.log("Note synced.");
+        done_syncing();
     })
     .catch(function (error) {
         // The document probably doesn't exist.
         // We need to create the document in Cloud Firestore
         chapterDocumentRef.set(n_obj)
             .then(function () {
-                console.log("Created note: " + n_obj);
+                // console.log("Created note: " + n_obj);
+                done_syncing();
             })
             .catch(function (error) {
                 console.error("Error updating document: ", error);
+                done_syncing();
             })
     });
 }
@@ -296,17 +304,35 @@ function syncUnsyncedNotes() {
     for (var i = 0; i < notes.length; i++) {
         // console.log($(notes[i]).parent().parent().prop('id'));
         var verse_id = $(notes[i]).parent().parent().prop('id').replace("v_", "n_");
-        console.log("syncing verse: " + verse_id);
+        // console.log("syncing verse: " + verse_id);
         note_sync(verse_id)
     }
 }
 
 var data_synced_down = false;
 
+function syncing() {
+    console.log("syncing")
+    clearTimeout(sync_timeout);
+    $('.sync-complete').addClass('hidden');
+    $('.sync').removeClass('hidden');
+}
+
+function done_syncing() {
+    console.log("done syncing")
+    $('.sync').addClass('hidden');
+    $('.sync-complete').removeClass('hidden');
+    clearTimeout(sync_timeout);
+    sync_timeout = setTimeout(function () {
+        $('.sync-complete').addClass('hidden');
+    }, 2000);
+
+}
+
 function syncDown() {
     if (user_valid) {
-        console.log('users/' + app_user.uid + '/chapter_sync/' + book + ' ' + chapter);
         var chapterDocumentRef = db.doc('users/' + app_user.uid + '/chapter_sync/' + book + ' ' + chapter);
+        syncing();
         chapterDocumentRef.get()
         .then(function(doc) {
             if (doc.exists) {
@@ -314,8 +340,8 @@ function syncDown() {
                 for (var key of keys) {
                     if(key.charAt(0) == "n") {
                         //Add notes
-                        console.log(doc.data()[key]);
-                        console.log(key.replace("n_", ""));
+                        // console.log(doc.data()[key]);
+                        // console.log(key.replace("n_", ""));
                         addNote (key.replace("n_", ""), doc.data()[key]);
                     } if (key.charAt(0) == "v") {
                         //Update verses
@@ -324,23 +350,55 @@ function syncDown() {
                         var this_verse = verse_id.replace('v_', '');
                         $("#" + key).find('.verse_button_select').attr('value', translation);
                         $("#" + key).find('.verse_button_select').text(translations[translation]);
-                        updateVerse(this_verse, translation);
+                        updateVerse(this_verse, translation, false);
                     }
                 }
+                $(document).ready(function () {
+                    $('body').on('touchstart', function () { });
+                    $("body").on('DOMSubtreeModified', ".note-editable", function () {
+                        sync_up_note($(this).attr("id"));
+                    });    
+                })
+                console.log("Content synced down.");
+                done_syncing();
             } else {
                 console.log('document not found');
+                $(document).ready(function () {
+                    $('body').on('touchstart', function () { });
+                    $("body").on('DOMSubtreeModified', ".note-editable", function () {
+                        sync_up_note($(this).attr("id"));
+                    });    
+                })
+                done_syncing();
             }
           })
         .catch(function(error) {
             console.log("Error getting documents: ", error);
+            $(document).ready(function () {
+                $('body').on('touchstart', function () { });
+                $("body").on('DOMSubtreeModified', ".note-editable", function () {
+                    sync_up_note($(this).attr("id"));
+                });    
+            })
+            done_syncing();
         });
+    } else {
+        $(document).ready(function () {
+            $('body').on('touchstart', function () { });
+            $("body").on('DOMSubtreeModified', ".note-editable", function () {
+                sync_up_note($(this).attr("id"));
+            });    
+        })
     }
 }
 
-function updateVerse(verse_id, translation) {
+function updateVerse(verse_id, translation, sync) {
     $.getJSON("/Bibles/" + translations[translation] + "/" + book + "/" + chapter + ".json", function (chapter_data) {
         var new_verse_text = chapter_data[verse_id];
         $("#v_" + verse_id).find('.verse_text').text(new_verse_text);
+        if(sync) {
+            sync_up_verse("v_" + verse_id);
+        }
     });
 }
 function addNote (verse_id, verse_html) { 
@@ -470,8 +528,6 @@ function pageIsReady() {
                 $('#chapter').append(verse_html);
             }
 
-            $('body').on('touchstart', function () { });
-
             $('.verse_button_prev').click(function () {
                 let this_button = this;
                 var this_verse_id = $(this_button).parent().parent().parent().attr('id');
@@ -483,7 +539,7 @@ function pageIsReady() {
                 }
                 $(this_button).siblings('.verse_button_select').attr('value', current);
                 $(this_button).siblings('.verse_button_select').text(translations[current]);
-                updateVerse(this_verse, current);
+                updateVerse(this_verse, current, true);
             });
 
             $('.verse_button_next').click(function () {
@@ -497,13 +553,12 @@ function pageIsReady() {
                 }
                 $(this_button).siblings('.verse_button_select').attr('value', current);
                 $(this_button).siblings('.verse_button_select').text(translations[current]);
-                updateVerse(this_verse, current);
+                updateVerse(this_verse, current, true);
             });
 
             $('.add_note').click(function () {
                 if ($(this).attr('value') === '0') {
                     var verse = $(this).prop("id");
-                    console.log(verse);
                     addNote(verse);
                 } else {
                     $(this).parent().parent().find('.note').remove();
@@ -513,10 +568,6 @@ function pageIsReady() {
                     var note_id = verse_id.replace('v', 'n');
                     sync_up_note(note_id);
                 }
-            });
-
-            $("body").on('DOMSubtreeModified', ".note-editable", function () {
-                sync_up_note($(this).attr("id"));
             });
 
             if (window.location.pathname === "/chapter" || "/chapter/") {

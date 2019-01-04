@@ -1,0 +1,50 @@
+<style>
+.sync {
+    position: fixed;    
+    bottom: 10px;;
+    left: 10px;;
+}
+
+.sync-complete {
+    position: fixed;    
+    bottom: 10px;;
+    left: 10px;;
+}
+
+.sync {
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 0s, opacity 0.3s linear;
+}
+
+.sync.hidden {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.3s linear;
+}
+
+.sync-complete {
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 0s, opacity 0.3s linear;
+}
+
+.sync-complete.hidden {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.3s linear;
+}
+
+
+
+</style>
+
+<div class="sync hidden">
+    <i class="fas fa-circle-notch fa-spin fa-2x fa-fw text-primary"></i>
+    <span class="sr-only">Loading...</span>
+</div>
+
+<div class="sync-complete hidden">
+    <i class="far fa-check-circle fa-2x fa-fw text-success"></i>
+    <span class="sr-only">Loading...</span>
+</div>
