@@ -165,6 +165,7 @@ firebase.auth().onAuthStateChanged(function (user) {
             $('#sign-up').addClass("d-none");
             $('.account').attr("onclick", 'signOut()');
             $('.account').text('Logout');
+            syncUnsyncedNotes();
             pageIsReady();
         });
         console.log(user.uid);
@@ -174,7 +175,7 @@ firebase.auth().onAuthStateChanged(function (user) {
         $(document).ready(function () {
             $('#sign-up').removeClass("d-none");
             $('#account').attr("onclick", 'signIn()');
-            $('#account').html('Login / Register <i class="fab fa-google"></i>');    
+            $('#account').html('Login / Sign Up <i class="fab mx-1 fa-google"></i>');    
             pageIsReady();
         });
     }
@@ -197,7 +198,7 @@ function signIn() {
         var credential = error.credential;
 
         $('.account').attr("onclick", 'signIn()');
-        $('.account').html('Login / Register <i class="fab fa-google"></i>');
+        $('.account').html('Login / Sign Up <i class="fab mx-1 fa-google"></i>');
         // $('#profile').addClass('d-none');
         user_valid = false;
     });
@@ -207,7 +208,7 @@ function signOut() {
     firebase.auth().signOut().then(function () {
         // Sign-out successful.
         $('.account').attr("onclick", 'signIn()');
-        $('.account').html('Login / Register <i class="fab fa-google"></i>');
+        $('.account').html('Login / Sign Up <i class="fab mx-1 fa-google"></i>');
         // $('.profile').addClass('d-none');
         // refresh the page
         user_valid = false;
@@ -253,33 +254,50 @@ function sync_up_note(note_number) {
     if (user_valid) {
         clearTimeout(timeout);
         timeout = setTimeout(function () {
-            var n_obj = {};
-            if ($('#' + note_number)[0] === undefined) {
-                console.log("Note has been deleted");
-                n_obj[note_number] = firebase.firestore.FieldValue.delete();
-            } else {
-                console.log("Note is present");
-                n_obj[note_number] = $('#' + note_number)[0].innerHTML;
-            }
-            var chapterDocumentRef = db.doc('users/' + app_user.uid + '/chapter_sync/' + book + ' ' + chapter);
-            chapterDocumentRef.update(n_obj)
-                .then(function () {
-                    console.log("Updated note: " + n_obj);
-                })
-                .catch(function (error) {
-                    // The document probably doesn't exist.
-                    // We need to create the document in Cloud Firestore
-                    chapterDocumentRef.set(n_obj)
-                        .then(function () {
-                            console.log("Created note: " + n_obj);
-                        })
-                        .catch(function (error) {
-                            console.error("Error updating document: ", error);
-                        })
-                });
+            note_sync(note_number);
         }, 1000);
     } else {
         console.log("Not logged in");
+    }
+}
+function note_sync (note_number) {
+    var n_obj = {};
+    if ($('#' + note_number)[0] === undefined) {
+        console.log("Note has been deleted");
+        n_obj[note_number] = firebase.firestore.FieldValue.delete();
+    } else {
+        console.log("Note is present");
+        n_obj[note_number] = $('#' + note_number)[0].innerHTML;
+    }
+    var chapterDocumentRef = db.doc('users/' + app_user.uid + '/chapter_sync/' + book + ' ' + chapter);
+    chapterDocumentRef.update(n_obj)
+    .then(function () {
+        console.log("Updated note: " + n_obj);
+    })
+    .catch(function (error) {
+        // The document probably doesn't exist.
+        // We need to create the document in Cloud Firestore
+        chapterDocumentRef.set(n_obj)
+            .then(function () {
+                console.log("Created note: " + n_obj);
+            })
+            .catch(function (error) {
+                console.error("Error updating document: ", error);
+            })
+    });
+}
+
+function syncUnsyncedNotes() {
+    var notes = $('.summernote');
+    // var keys = Object.keys(notes);
+    // for (var key of keys) {
+    //     console.log(notes[key].parent('.verse').prop('id'));
+    // }
+    for (var i = 0; i < notes.length; i++) {
+        // console.log($(notes[i]).parent().parent().prop('id'));
+        var verse_id = $(notes[i]).parent().parent().prop('id').replace("v_", "n_");
+        console.log("syncing verse: " + verse_id);
+        note_sync(verse_id)
     }
 }
 
