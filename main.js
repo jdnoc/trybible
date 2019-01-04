@@ -449,7 +449,7 @@ function pageIsReady() {
             // make and set the verses
             var verse_numbers = Object.keys(chapter_data);
             for (i = 1; i <= verse_numbers.length; i++) {
-                verse_html = '<div id="v_' + i + '" class="verse row justify-content-center"><div class="col-md-2 col-4 my-auto order-1 order-md-1 text-center"><div class="btn-group vs_tr_btn"><button class="verse_button_prev btn btn-sm btn-primary shadow"> < </button><button value="' + translations.indexOf(translation) + '" class="verse_button_select btn btn-sm btn-primary shadow">' + translation + '</button><button class="verse_button_next btn btn-sm btn-primary shadow"> > </button></div></div><div class="col-md-2 col-4 my-auto order-2 order-md-3 text-center"><button id="' + i + '" class="vs_tr_btn add_note shadow mx-2 btn btn-sm btn-primary" value="0">➕ Note</button></div><div class="my-1 col-md-8 order-3 order-md-2"><p class="w-100 chapter_text d-inline"><sup> ' + i + ' </sup></p><p class="chapter_text verse_text d-inline"> ' + chapter_data[i] + '</p></div></div>';
+                verse_html = '<div id="v_' + i + '" class="verse row justify-content-center"><div class="col-md-2 col-4 order-1 order-md-1 text-center"><div class="btn-group vs_tr_btn"><button class="verse_button_prev btn btn-sm btn-primary shadow"> < </button><button value="' + translations.indexOf(translation) + '" class="verse_button_select btn btn-sm btn-primary shadow">' + translation + '</button><button class="verse_button_next btn btn-sm btn-primary shadow"> > </button></div></div><div class="col-md-2 col-4 order-2 order-md-3 text-center"><button id="' + i + '" class="vs_tr_btn add_note shadow mx-2 btn btn-sm btn-primary" value="0">➕ Note</button></div><div class="my-1 col-md-8 order-3 order-md-2"><p class="w-100 chapter_text d-inline"><sup> ' + i + ' </sup></p><p class="chapter_text verse_text d-inline"> ' + chapter_data[i] + '</p></div></div>';
                 $('#chapter').append(verse_html);
             }
 
@@ -466,11 +466,7 @@ function pageIsReady() {
                 }
                 $(this_button).siblings('.verse_button_select').attr('value', current);
                 $(this_button).siblings('.verse_button_select').text(translations[current]);
-                $.getJSON("/Bibles/" + translations[current] + "/" + book + "/" + chapter + ".json", function (chapter_data) {
-                    var new_verse_text = chapter_data[this_verse];
-                    $(this_button).parents('.verse').find('.verse_text').text(new_verse_text);
-                    sync_up_verse(this_verse_id);
-                });
+                updateVerse(this_verse, current);
             });
 
             $('.verse_button_next').click(function () {
@@ -484,11 +480,7 @@ function pageIsReady() {
                 }
                 $(this_button).siblings('.verse_button_select').attr('value', current);
                 $(this_button).siblings('.verse_button_select').text(translations[current]);
-                $.getJSON("/Bibles/" + translations[current] + "/" + book + "/" + chapter + ".json", function (chapter_data) {
-                    var new_verse_text = chapter_data[this_verse];
-                    $(this_button).parents('.verse').find('.verse_text').text(new_verse_text);
-                    sync_up_verse(this_verse_id);
-                });
+                updateVerse(this_verse, current);
             });
 
             $('.add_note').click(function () {
