@@ -158,13 +158,13 @@ var app_user = null;
 firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
         console.log("user is logged in");
-        $('#account').attr("onclick", 'signOut()');
-        $('#account').text('Logout');
-        $('#profile').html(user.displayName.substring(0, user.displayName.indexOf(" ")) + '<i class="ml-2 fas fa-bible"></i>');
-        $('#profile').removeClass('d-none');
         user_valid = true;
         app_user = user;
         $(document).ready(function () {
+            $('#account').attr("onclick", 'signOut()');
+            $('#account').text('Logout');
+            $('#profile').html(user.displayName.substring(0, user.displayName.indexOf(" ")) + '<i class="ml-2 fas fa-bible"></i>');
+            $('#profile').removeClass('d-none');    
             pageIsReady();
         });
         console.log(user.uid);
@@ -187,14 +187,7 @@ function signIn() {
         var token = result.credential.accessToken;
         // The signed-in user info.
         app_user = result.user;
-        $('#account').attr("onclick", 'signOut()');
-        $('#account').text('Logout');
-        $('#profile').html(user.displayName.substring(0, user.displayName.indexOf(" ")) + '<i class="ml-2 fas fa-bible"></i>');
-        $('#profile').removeClass('d-none');
         user_valid = true;
-        if (translation && chapter && book) {
-            pageIsReady();
-        }
     }).catch(function (error) {
         // Handle Errors here.
         var errorCode = error.code;
@@ -217,7 +210,9 @@ function signOut() {
         $('#account').attr("onclick", 'signIn()');
         $('#account').html('Login / Register <i class="fab fa-google"></i>');
         $('#profile').addClass('d-none');
+        // refresh the page
         user_valid = false;
+        location.reload(); 
     }).catch(function (error) {
         // An error happened.
     });
